@@ -6,22 +6,16 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
-  useWindowDimensions,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { Button, Card, Input } from '../components';
-import HeroBanner from '../components/HeroBanner';
 import { useTheme } from '../context/ThemeContext';
 import { colors } from '../theme';
 
 const AddChildScreen = ({ navigation }) => {
   const { t } = useTranslation();
   const { isDark } = useTheme();
-  const insets = useSafeAreaInsets();
-  const { width } = useWindowDimensions();
-  const isSmallScreen = width < 380;
   const [childName, setChildName] = useState('');
   const [childAge, setChildAge] = useState('');
   const [childGroup, setChildGroup] = useState('');
@@ -34,6 +28,8 @@ const AddChildScreen = ({ navigation }) => {
   const bgColor = isDark ? colors.dark.bg.primary : colors.neutral[50];
   const textColor = isDark ? colors.dark.text.primary : colors.neutral[800];
   const subtextColor = isDark ? colors.dark.text.secondary : colors.neutral[500];
+  const iconBg = isDark ? colors.dark.primary.muted : colors.primary[50];
+  const iconColor = isDark ? colors.dark.primary.default : colors.primary[600];
   const backIconColor = isDark ? colors.dark.text.secondary : colors.neutral[600];
 
   const validateForm = () => {
@@ -86,18 +82,7 @@ const AddChildScreen = ({ navigation }) => {
 
   return (
     <ScrollView style={[styles.container, { backgroundColor: bgColor }]} showsVerticalScrollIndicator={false}>
-      <View style={[
-        styles.content,
-        {
-          padding: isSmallScreen ? 12 : 16,
-          paddingBottom: (isSmallScreen ? 16 : 24) + insets.bottom,
-        },
-      ]}>
-        <HeroBanner
-          title={t('addChild.title')}
-          subtitle={t('addChild.subtitle')}
-          badge={{ icon: 'people', label: t('addChild.childInfo') }}
-        />
+      <View style={styles.content}>
         {/* Back Button */}
         <TouchableOpacity
           style={styles.backButton}
@@ -106,6 +91,15 @@ const AddChildScreen = ({ navigation }) => {
           <Ionicons name="arrow-back" size={20} color={backIconColor} />
           <Text style={[styles.backButtonText, { color: backIconColor }]}>{t('back')}</Text>
         </TouchableOpacity>
+
+        {/* Header */}
+        <View style={styles.header}>
+          <View style={[styles.iconContainer, { backgroundColor: iconBg }]}>
+            <Ionicons name="person-add" size={32} color={iconColor} />
+          </View>
+          <Text style={[styles.title, { color: textColor }]}>{t('addChild.title')}</Text>
+          <Text style={[styles.subtitle, { color: subtextColor }]}>{t('addChild.subtitle')}</Text>
+        </View>
 
         {/* Child Information */}
         <Card style={styles.section}>
@@ -223,6 +217,27 @@ const styles = StyleSheet.create({
   },
   backButtonText: {
     fontSize: 16,
+  },
+  header: {
+    alignItems: 'center',
+    marginBottom: 32,
+  },
+  iconContainer: {
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 16,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: '700',
+    marginBottom: 8,
+  },
+  subtitle: {
+    fontSize: 16,
+    textAlign: 'center',
   },
   section: {
     marginBottom: 16,

@@ -392,7 +392,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor,
+    borderColor: 'transparent',
   },
   listContainerLarge: {
     maxWidth: '50%',

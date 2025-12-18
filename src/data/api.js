@@ -47,8 +47,6 @@ import { db } from '../config/firebase';
 const CHILDREN_COLLECTION = 'children';
 /** @constant {string} Firestore collection for brukere */
 const USERS_COLLECTION = 'users';
-/** @constant {string} Firestore collection for historikk */
-const HISTORY_COLLECTION = 'history';
 /** @constant {string} Firestore collection for innsjekking-logger */
 const CHECKIN_LOG_COLLECTION = 'checkinLogs';
 /** @constant {string} Firestore collection for kalenderhendelser */
@@ -438,13 +436,6 @@ export const createChild = async (childData) => {
 
     const docRef = await addDoc(collection(db, CHILDREN_COLLECTION), newChild);
 
-    // Logg til historikk
-    await saveToHistory({
-      action: 'create',
-      childId: docRef.id,
-      childName: newChild.name,
-    });
-
     // Returner med foreldre-info
     const childWithParents = await getChildById(docRef.id);
     return childWithParents;
@@ -500,14 +491,6 @@ export const updateChild = async (id, updates) => {
       updatedAt: serverTimestamp(),
     });
 
-    // Logg til historikk
-    const child = await getChildById(id);
-    await saveToHistory({
-      action: 'update',
-      childId: id,
-      childName: child?.name,
-    });
-
     return child;
   } catch (error) {
     console.error('Error updating child:', error);
@@ -523,13 +506,6 @@ export const deleteChild = async (id) => {
     const child = await getChildById(id);
     const docRef = doc(db, CHILDREN_COLLECTION, id);
     await deleteDoc(docRef);
-
-    // Logg til historikk
-    await saveToHistory({
-      action: 'delete',
-      childId: id,
-      childName: child?.name,
-    });
 
     return true;
   } catch (error) {
@@ -797,59 +773,6 @@ export const getCheckInOutLogs = async (options = {}) => {
     }));
   } catch (error) {
     console.error('Error getting check-in/out logs:', error);
-    return [];
-  }
-};
-
-// ====== Historikk ======
-
-const saveToHistory = async (entry) => {
-  try {
-    await addDoc(collection(db, HISTORY_COLLECTION), {
-      ...entry,
-      timestamp: serverTimestamp(),
-    });
-  } catch (error) {
-    console.error('Error saving to history:', error);
-  }
-};
-
-export const getHistory = async (options = {}) => {
-  try {
-    let q = collection(db, HISTORY_COLLECTION);
-    const constraints = [];
-
-    if (options.childId) {
-      constraints.push(where('childId', '==', options.childId));
-    }
-
-    constraints.push(orderBy('timestamp', 'desc'));
-
-    if (options.limit) {
-      constraints.push(limit(options.limit));
-    }
-
-    q = query(q, ...constraints);
-    const querySnapshot = await getDocs(q);
-
-    let history = querySnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data(),
-      timestamp: formatTimestamp(doc.data().timestamp),
-    }));
-
-    // Filtrer på dato hvis spesifisert
-    if (options.date) {
-      const targetDate = new Date(options.date).toDateString();
-      history = history.filter((entry) => {
-        const entryDate = new Date(entry.timestamp).toDateString();
-        return entryDate === targetDate;
-      });
-    }
-
-    return history;
-  } catch (error) {
-    console.error('Error getting history:', error);
     return [];
   }
 };

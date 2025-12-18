@@ -434,15 +434,10 @@ const styles = StyleSheet.create({
     color: colors.white,
   },
   kindergartenCard: {
-    backgroundColor: colors.white,
     borderRadius: 16,
     padding: 16,
     marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
-    elevation: 2,
+    borderWidth: 1,
   },
   kindergartenContent: {
     flexDirection: 'row',
@@ -490,6 +485,7 @@ const styles = StyleSheet.create({
     padding: 18,
     borderRadius: 16,
     gap: 14,
+    borderWidth: 1,
   },
   statIconContainer: {
     borderRadius: 14,
@@ -653,6 +649,7 @@ const styles = StyleSheet.create({
     padding: 48,
     marginHorizontal: 24,
     borderRadius: 20,
+    borderWidth: 1,
   },
   emptyIcon: {
     width: 80,

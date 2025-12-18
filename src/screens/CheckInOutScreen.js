@@ -116,9 +116,9 @@ const CheckInOutScreen = ({ navigation }) => {
     });
 
     setActionLoading(`checkout-${child.id}`);
+    try {
       console.log('Sjekker ut barn:', child.name, child.id);
       await checkOutChild(child.id, user?.name);
-      console.log('Utsjekking vellykket');
       console.log('Utsjekking vellykket');
       setRecentAction({
         childName: child.name,

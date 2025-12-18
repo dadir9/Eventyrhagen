@@ -429,7 +429,6 @@ export const createChild = async (childData) => {
       checkedOutAt: null,
       parentIds: parentIds, // ⭐ Array av userId
       primaryParentId: primaryParentId, // ⭐ Primær kontakt
-      notes: [],
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     };
@@ -1005,40 +1004,6 @@ export const resetPasswordWithToken = async (token, newPassword) => {
     return { success: true, message: 'Passordet er oppdatert' };
   } catch (error) {
     console.error('Error resetting password:', error);
-    throw error;
-  }
-};
-
-// ====== Notater ======
-
-export const addNote = async (childId, note) => {
-  try {
-    const child = await getChildById(childId);
-    const notes = child.notes || [];
-
-    notes.push({
-      id: Date.now().toString(),
-      text: note,
-      timestamp: new Date().toISOString(),
-    });
-
-    await updateChild(childId, { notes });
-    return await getChildById(childId);
-  } catch (error) {
-    console.error('Error adding note:', error);
-    throw error;
-  }
-};
-
-export const deleteNote = async (childId, noteId) => {
-  try {
-    const child = await getChildById(childId);
-    const notes = (child.notes || []).filter((n) => n.id !== noteId);
-
-    await updateChild(childId, { notes });
-    return await getChildById(childId);
-  } catch (error) {
-    console.error('Error deleting note:', error);
     throw error;
   }
 };

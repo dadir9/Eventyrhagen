@@ -20,6 +20,7 @@ import { getAllChildren, getSettings, getChildrenForParent } from '../data/api';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { Avatar, Badge, SkeletonList, SkeletonStats } from '../components';
+import HeroBanner from '../components/HeroBanner';
 import { colors } from '../theme';
 
 // Pulserende status-indikator komponent
@@ -231,15 +232,15 @@ const DashboardScreen = ({ navigation }) => {
 
   const renderHeader = () => (
     <View style={styles.headerContainer}>
-      {/* Welcome section */}
-      <View style={styles.welcomeSection}>
-        <View style={styles.welcomeLeft}>
-          <Text style={[styles.welcomeGreeting, { color: textColor }]}>
-            Hei, {user?.name?.split(' ')[0]}
-          </Text>
-          <Text style={[styles.welcomeDate, { color: subtextColor }]}>{today}</Text>
-        </View>
-        
+      <HeroBanner
+        title={`Hei, ${user?.name?.split(' ')[0] || ''}`}
+        subtitle={today}
+        badge={
+          settings
+            ? { icon: 'business', label: settings.kindergartenName || '' }
+            : null
+        }
+      >
         {user?.role === 'admin' && (
           <TouchableOpacity
             style={styles.addButton}
@@ -250,7 +251,7 @@ const DashboardScreen = ({ navigation }) => {
             <Text style={styles.addButtonText}>Nytt barn</Text>
           </TouchableOpacity>
         )}
-      </View>
+      </HeroBanner>
 
       {/* Kindergarten info */}
       {settings && (

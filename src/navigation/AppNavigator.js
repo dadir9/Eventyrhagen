@@ -137,8 +137,8 @@ const CustomHeader = ({ navigation, currentRoute }) => {
   const userBg = isDark ? colors.dark.bg.tertiary : colors.neutral[50];
   const userNameColor = isDark ? colors.dark.text.primary : colors.neutral[800];
   const userRoleColor = isDark ? colors.dark.text.secondary : colors.neutral[500];
-  const logoutBg = isDark ? 'rgba(248, 81, 73, 0.15)' : colors.red[50];
-  const logoutBorder = isDark ? 'rgba(248, 81, 73, 0.3)' : colors.red[100];
+  const logoutBg = isDark ? '#1d2532' : colors.neutral[100];
+  const logoutBorder = isDark ? '#2a3444' : colors.neutral[200];
   const themeToggleBg = isDark ? colors.dark.bg.tertiary : colors.neutral[100];
   const modalBg = isDark ? colors.dark.surface.overlay : colors.white;
   const modalBorder = isDark ? colors.dark.border.default : colors.neutral[200];
@@ -304,9 +304,9 @@ const CustomHeader = ({ navigation, currentRoute }) => {
             accessibilityLabel="Logg ut"
             accessibilityHint="Trykk for å logge ut av appen"
           >
-            <Ionicons name="log-out-outline" size={20} color={isDark ? colors.dark.danger.default : colors.red[500]} />
+            <Ionicons name="log-out-outline" size={20} color={isDark ? colors.neutral[200] : colors.neutral[700]} />
             {isLargeScreen && (
-              <Text style={[styles.logoutText, { color: isDark ? colors.dark.danger.default : colors.red[600] }]}>Logg ut</Text>
+              <Text style={[styles.logoutText, { color: isDark ? colors.neutral[200] : colors.neutral[700] }]}>Logg ut</Text>
             )}
           </TouchableOpacity>
         </View>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+﻿import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -16,6 +16,7 @@ import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { Avatar } from '../components';
 import { colors } from '../theme';
+import HeroBanner from '../components/HeroBanner';
 
 const CheckInOutScreen = ({ navigation }) => {
   const { t } = useTranslation();
@@ -32,13 +33,15 @@ const CheckInOutScreen = ({ navigation }) => {
   const isLargeScreen = width > 900;
   const isSmallScreen = width < 380;
 
-  // Theme colors
-  const bgColor = isDark ? colors.dark.bg.primary : colors.neutral[50];
-  const cardBg = isDark ? colors.dark.surface.default : colors.white;
-  const textColor = isDark ? colors.dark.text.primary : colors.neutral[800];
-  const subtextColor = isDark ? colors.dark.text.secondary : colors.neutral[500];
-  const borderColor = isDark ? colors.dark.border.default : colors.neutral[200];
-  const childCardBg = isDark ? colors.dark.bg.tertiary : colors.neutral[50];
+  // Palette aligned with dashboard
+  const bgColor = isDark ? '#0c1424' : colors.neutral[50];
+  const panelColor = isDark ? '#0d1728' : colors.white;
+  const surfaceColor = isDark ? '#111a2e' : colors.white;
+  const textColor = isDark ? colors.neutral[50] : colors.neutral[900];
+  const subtextColor = isDark ? colors.neutral[300] : colors.neutral[500];
+  const borderColor = isDark ? '#1f2b45' : colors.neutral[200];
+  const childCardBg = panelColor;
+  const cardBg = panelColor;
 
   useEffect(() => {
     loadChildren();
@@ -88,9 +91,9 @@ const CheckInOutScreen = ({ navigation }) => {
 
     setActionLoading(`checkin-${child.id}`);
     try {
-      console.log('🔄 Sjekker inn barn:', child.name, child.id);
+      console.log('Sjekker inn barn:', child.name, child.id);
       await checkInChild(child.id, user?.name);
-      console.log('✅ Innsjekking vellykket');
+      console.log('Innsjekking vellykket');
       setRecentAction({
         childName: child.name,
         action: 'inn',
@@ -98,7 +101,7 @@ const CheckInOutScreen = ({ navigation }) => {
       });
       await loadChildren();
     } catch (error) {
-      console.error('❌ Error checking in:', error);
+      console.error('Error checking in:', error);
       alert(`Kunne ikke sjekke inn ${child.name}. Feil: ${error.message}`);
     } finally {
       setActionLoading(null);
@@ -114,9 +117,9 @@ const CheckInOutScreen = ({ navigation }) => {
 
     setActionLoading(`checkout-${child.id}`);
     try {
-      console.log('🔄 Sjekker ut barn:', child.name, child.id);
+      console.log('Sjekker ut barn:', child.name, child.id);
       await checkOutChild(child.id, user?.name);
-      console.log('✅ Utsjekking vellykket');
+      console.log('Utsjekking vellykket');
       setRecentAction({
         childName: child.name,
         action: 'ut',
@@ -124,7 +127,7 @@ const CheckInOutScreen = ({ navigation }) => {
       });
       await loadChildren();
     } catch (error) {
-      console.error('❌ Error checking out:', error);
+      console.error('Error checking out:', error);
       alert(`Kunne ikke sjekke ut ${child.name}. Feil: ${error.message}`);
     } finally {
       setActionLoading(null);
@@ -135,7 +138,7 @@ const CheckInOutScreen = ({ navigation }) => {
   const checkedIn = children.filter((c) => c.isCheckedIn);
 
   const renderChildItem = ({ item, isCheckedInList }) => (
-    <View style={[styles.childCard, { backgroundColor: childCardBg }]}>
+    <View style={[styles.childCard, { backgroundColor: childCardBg, borderColor, borderWidth: 1 }]}>
       <View style={styles.childInfo}>
         <Avatar
           initials={item.avatar}
@@ -144,9 +147,7 @@ const CheckInOutScreen = ({ navigation }) => {
         />
         <View style={styles.childDetails}>
           <Text style={[styles.childName, { color: textColor }]}>{item.name}</Text>
-          <Text style={[styles.childMeta, { color: subtextColor }]}>
-            {item.age} år • {item.group}
-          </Text>
+          <Text style={[styles.childMeta, { color: subtextColor }]}>{item.age} ar - {item.group}</Text>
         </View>
       </View>
       
@@ -158,8 +159,8 @@ const CheckInOutScreen = ({ navigation }) => {
           </View>
           <TouchableOpacity
             style={[styles.checkOutButton, { 
-              borderColor: isDark ? colors.dark.border.default : colors.neutral[200],
-              backgroundColor: isDark ? colors.dark.bg.tertiary : colors.white,
+              borderColor,
+              backgroundColor: isDark ? surfaceColor : colors.white,
               opacity: actionLoading === `checkout-${item.id}` ? 0.7 : 1
             }]}
             onPress={() => handleCheckOut(item)}
@@ -167,9 +168,9 @@ const CheckInOutScreen = ({ navigation }) => {
             activeOpacity={0.7}
           >
             {actionLoading === `checkout-${item.id}` ? (
-              <ActivityIndicator size="small" color={isDark ? colors.dark.text.secondary : colors.neutral[600]} />
+              <ActivityIndicator size="small" color={isDark ? colors.neutral[300] : colors.neutral[600]} />
             ) : (
-              <Text style={[styles.checkOutButtonText, { color: isDark ? colors.dark.text.secondary : colors.neutral[600] }]}>Sjekk ut</Text>
+              <Text style={[styles.checkOutButtonText, { color: isDark ? colors.neutral[200] : colors.neutral[700] }]}>Sjekk ut</Text>
             )}
           </TouchableOpacity>
         </View>
@@ -196,7 +197,11 @@ const CheckInOutScreen = ({ navigation }) => {
   );
 
   const renderList = (data, title, subtitle, isCheckedInList, emptyIcon, emptyText) => (
-    <View style={[styles.listContainer, isLargeScreen && styles.listContainerLarge, { backgroundColor: cardBg }]}>
+    <View style={[
+      styles.listContainer,
+      isLargeScreen && styles.listContainerLarge,
+      { backgroundColor: cardBg, borderColor },
+    ]}>
       <View style={[
         styles.listHeader,
         isCheckedInList 
@@ -263,28 +268,26 @@ const CheckInOutScreen = ({ navigation }) => {
 
   return (
     <View style={[styles.container, { backgroundColor: bgColor }]}>
-      {/* Header */}
-      <View style={[styles.header, { flexDirection: isLargeScreen ? 'row' : 'column', alignItems: isLargeScreen ? 'center' : 'flex-start' }]}>
-        <View>
-          <Text style={[styles.title, { color: textColor, fontSize: isSmallScreen ? 24 : 28 }]}>{t('checkInOut.title')}</Text>
-          <Text style={[styles.subtitle, { color: subtextColor }]}>{t('checkInOut.subtitle')}</Text>
-        </View>
-        
-        <View style={styles.statsRow}>
-          <View style={[styles.statBadge, { backgroundColor: isDark ? colors.dark.primary.muted : colors.primary[50] }]}>
-            <Ionicons name="people" size={isSmallScreen ? 14 : 16} color={isDark ? colors.dark.primary.default : colors.primary[600]} />
-            <Text style={[styles.statText, { color: isDark ? colors.dark.primary.default : colors.primary[700] }]}>
-              {children.length} totalt
-            </Text>
-          </View>
-          <View style={[styles.statBadge, { backgroundColor: isDark ? colors.dark.success.muted : colors.success[50] }]}>
+      <HeroBanner
+        title={t('checkInOut.title')}
+        subtitle={t('checkInOut.subtitle')}
+        badge={{ icon: 'people', label: `${children.length} barn totalt` }}
+      >
+        <View style={styles.heroActions}>
+          <View style={[styles.statBadge, { backgroundColor: isDark ? colors.dark.success.muted : colors.success[50], borderColor }]}>
             <Ionicons name="checkmark-circle" size={isSmallScreen ? 14 : 16} color={isDark ? colors.dark.success.default : colors.success[600]} />
             <Text style={[styles.statText, { color: isDark ? colors.dark.success.default : colors.success[700] }]}>
-              {checkedIn.length} inne
+              {checkedIn.length} Inne
+            </Text>
+          </View>
+          <View style={[styles.statBadge, { backgroundColor: isDark ? colors.dark.primary.muted : colors.primary[50], borderColor }]}>
+            <Ionicons name="log-in-outline" size={isSmallScreen ? 14 : 16} color={isDark ? colors.dark.primary.default : colors.primary[600]} />
+            <Text style={[styles.statText, { color: isDark ? colors.dark.primary.default : colors.primary[700] }]}>
+              {notCheckedIn.length} venter
             </Text>
           </View>
         </View>
-      </View>
+      </HeroBanner>
 
       {/* Success toast */}
       {recentAction && (
@@ -311,7 +314,7 @@ const CheckInOutScreen = ({ navigation }) => {
         )}
         {renderList(
           checkedIn,
-          'Inne nå',
+          'Inne',
           `${checkedIn.length} barn`,
           true,
           'checkmark-circle-outline',
@@ -328,22 +331,10 @@ const styles = StyleSheet.create({
     width: '100%',
     overflow: 'hidden',
   },
-  header: {
-    justifyContent: 'space-between',
-    padding: 24,
-    paddingBottom: 16,
-    gap: 16,
-  },
-  title: {
-    fontWeight: '700',
-  },
-  subtitle: {
-    fontSize: 14,
-    marginTop: 4,
-  },
-  statsRow: {
+  heroActions: {
     flexDirection: 'row',
-    gap: 12,
+    gap: 10,
+    alignItems: 'center',
   },
   statBadge: {
     flexDirection: 'row',
@@ -352,6 +343,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.08)',
   },
   statText: {
     fontSize: 14,
@@ -398,11 +391,8 @@ const styles = StyleSheet.create({
     flex: 1,
     borderRadius: 20,
     overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 12,
-    elevation: 3,
+    borderWidth: 1,
+    borderColor: 'transparent',
   },
   listContainerLarge: {
     maxWidth: '50%',
@@ -538,3 +528,9 @@ const styles = StyleSheet.create({
 });
 
 export default CheckInOutScreen;
+
+
+
+
+
+

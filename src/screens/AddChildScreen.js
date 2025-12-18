@@ -6,7 +6,9 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
+  useWindowDimensions,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { Button, Card, Input } from '../components';
@@ -17,6 +19,9 @@ import { colors } from '../theme';
 const AddChildScreen = ({ navigation }) => {
   const { t } = useTranslation();
   const { isDark } = useTheme();
+  const insets = useSafeAreaInsets();
+  const { width } = useWindowDimensions();
+  const isSmallScreen = width < 380;
   const [childName, setChildName] = useState('');
   const [childAge, setChildAge] = useState('');
   const [childGroup, setChildGroup] = useState('');
@@ -81,7 +86,13 @@ const AddChildScreen = ({ navigation }) => {
 
   return (
     <ScrollView style={[styles.container, { backgroundColor: bgColor }]} showsVerticalScrollIndicator={false}>
-      <View style={styles.content}>
+      <View style={[
+        styles.content,
+        {
+          padding: isSmallScreen ? 12 : 16,
+          paddingBottom: (isSmallScreen ? 16 : 24) + insets.bottom,
+        },
+      ]}>
         <HeroBanner
           title={t('addChild.title')}
           subtitle={t('addChild.subtitle')}

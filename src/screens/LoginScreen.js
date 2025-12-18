@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -186,7 +186,7 @@ const FloatingBubble = ({ size, initialX, initialY, duration, delay, screenWidth
 
 const LoginScreen = ({ navigation }) => {
   const { t, i18n } = useTranslation();
-  const { login } = useAuth();
+  const { login, loginWithGoogle, loginWithMicrosoft } = useAuth();
   const { isDark } = useTheme();
   const insets = useSafeAreaInsets();
   
@@ -203,6 +203,7 @@ const LoginScreen = ({ navigation }) => {
   const [focused, setFocused] = useState(null);
   const [rememberMe, setRememberMe] = useState(true);
   const [loginLoading, setLoginLoading] = useState(false);
+  const [providerLoading, setProviderLoading] = useState('');
   const [showLanguageModal, setShowLanguageModal] = useState(false);
   
   // Forgot password state
@@ -239,14 +240,15 @@ const LoginScreen = ({ navigation }) => {
     }
     setError('');
     setLoginLoading(true);
-    
-    const result = await login(email, password);
-    
-    if (!result.success) {
-      setError(result.error || t('loginPage.loginError'));
+    try {
+      const result = await login(email, password);
+      if (!result.success) {
+        setError(result.error || t('loginPage.loginError'));
+      }
+    } finally {
       setLoginLoading(false);
     }
-    // Ved suksess vil onAuthStateChanged håndtere navigasjonen
+    // Ved suksess vil onAuthStateChanged handtere navigasjonen
   };
 
   const handleForgotPassword = async () => {
@@ -275,6 +277,23 @@ const LoginScreen = ({ navigation }) => {
   const handleLanguageChange = (langCode) => {
     i18n.changeLanguage(langCode);
     setShowLanguageModal(false);
+  };
+
+  
+
+  const handleProviderLogin = async (provider) => {
+    setError('');
+    setProviderLoading(provider);
+    try {
+      const result = provider === 'google'
+        ? await loginWithGoogle()
+        : await loginWithMicrosoft();
+      if (!result.success) {
+        setError(result.error || t('loginPage.loginError'));
+      }
+    } finally {
+      setProviderLoading('');
+    }
   };
 
   // Theme colors - Profesjonell dark mode
@@ -443,7 +462,7 @@ const LoginScreen = ({ navigation }) => {
           />
           <TextInput
             style={[styles.input, { color: textColor }]}
-            placeholder="••••••••"
+            placeholder={t('loginPage.passwordPlaceholder') || '********'}
             placeholderTextColor={colors.neutral[400]}
             value={password}
             onChangeText={setPassword}
@@ -502,14 +521,44 @@ const LoginScreen = ({ navigation }) => {
         <View style={[styles.dividerLine, { backgroundColor: isDark ? colors.neutral[700] : colors.neutral[200] }]} />
       </View>
 
-      <View style={styles.socialButtons}>
-        <TouchableOpacity style={[styles.socialButton, { borderColor: isDark ? colors.neutral[600] : colors.neutral[200], backgroundColor: cardBg }]}>
-          <Ionicons name="logo-microsoft" size={20} color="#00A4EF" />
-          <Text style={[styles.socialButtonText, { color: textColor }]}>Microsoft</Text>
+      <View style={[styles.socialButtons, isSmallScreen && styles.socialButtonsStacked]}>
+        <TouchableOpacity
+          style={[
+            styles.socialButton,
+            { borderColor: isDark ? colors.neutral[600] : colors.neutral[200], backgroundColor: cardBg },
+            (providerLoading === 'microsoft' || providerLoading === 'google') && styles.socialButtonDisabled,
+          ]}
+          onPress={() => handleProviderLogin('microsoft')}
+          disabled={!!providerLoading}
+          activeOpacity={0.8}
+        >
+          {providerLoading === 'microsoft' ? (
+            <ActivityIndicator color={textColor} />
+          ) : (
+            <>
+              <Ionicons name="logo-microsoft" size={20} color="#00A4EF" />
+              <Text style={[styles.socialButtonText, { color: textColor }]}>Microsoft</Text>
+            </>
+          )}
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.socialButton, { borderColor: isDark ? colors.neutral[600] : colors.neutral[200], backgroundColor: cardBg }]}>
-          <Ionicons name="logo-google" size={20} color="#DB4437" />
-          <Text style={[styles.socialButtonText, { color: textColor }]}>Google</Text>
+        <TouchableOpacity
+          style={[
+            styles.socialButton,
+            { borderColor: isDark ? colors.neutral[600] : colors.neutral[200], backgroundColor: cardBg },
+            (providerLoading === 'microsoft' || providerLoading === 'google') && styles.socialButtonDisabled,
+          ]}
+          onPress={() => handleProviderLogin('google')}
+          disabled={!!providerLoading}
+          activeOpacity={0.8}
+        >
+          {providerLoading === 'google' ? (
+            <ActivityIndicator color={textColor} />
+          ) : (
+            <>
+              <Ionicons name="logo-google" size={20} color="#DB4437" />
+              <Text style={[styles.socialButtonText, { color: textColor }]}>Google</Text>
+            </>
+          )}
         </TouchableOpacity>
       </View>
 
@@ -563,7 +612,7 @@ const LoginScreen = ({ navigation }) => {
 
             <View style={[styles.mobileFooter, { paddingBottom: insets.bottom + 20 }]}>
               <Text style={[styles.footerText, { color: colors.neutral[400] }]}>
-                © 2025 Henteklar. Alle rettigheter reservert.
+                (c) 2025 Henteklar. Alle rettigheter reservert.
               </Text>
             </View>
           </KeyboardAvoidingView>
@@ -1054,6 +1103,9 @@ const styles = StyleSheet.create({
     gap: 12,
     marginBottom: 24,
   },
+  socialButtonsStacked: {
+    flexDirection: 'column',
+  },
   socialButton: {
     flex: 1,
     flexDirection: 'row',
@@ -1063,6 +1115,9 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderRadius: 12,
     borderWidth: 2,
+  },
+  socialButtonDisabled: {
+    opacity: 0.7,
   },
   socialButtonText: {
     fontSize: 14,
@@ -1265,3 +1320,10 @@ const styles = StyleSheet.create({
 });
 
 export default LoginScreen;
+
+
+
+
+
+
+

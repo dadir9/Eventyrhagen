@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+﻿import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   View,
   Text,
@@ -100,13 +100,17 @@ const DashboardScreen = ({ navigation }) => {
   const isSmallScreen = width < 380;
   const numColumns = isLargeScreen ? 2 : 1;
 
-  // Theme colors - Profesjonell dark mode
-  const bgColor = isDark ? colors.dark.bg.primary : colors.neutral[50];
-  const cardBg = isDark ? colors.dark.surface.default : colors.white;
-  const textColor = isDark ? colors.dark.text.primary : colors.neutral[800];
-  const subtextColor = isDark ? colors.dark.text.secondary : colors.neutral[500];
-  const inputBg = isDark ? colors.dark.bg.tertiary : colors.white;
-  const inputBorder = isDark ? colors.dark.border.default : colors.neutral[200];
+  // Theme palette for dashboard
+  const bgColor = isDark ? '#0c1424' : colors.neutral[50];
+  const surfaceColor = isDark ? '#111a2e' : colors.white;
+  const elevatedColor = isDark ? '#0f192c' : colors.white;
+  const panelColor = isDark ? '#0d1728' : colors.white;
+  const cardBg = surfaceColor;
+  const textColor = isDark ? colors.neutral[50] : colors.neutral[900];
+  const subtextColor = isDark ? colors.neutral[300] : colors.neutral[500];
+  const borderColor = isDark ? '#1f2b45' : colors.neutral[200];
+  const inputBg = isDark ? '#0f1a2d' : colors.white;
+  const inputBorder = borderColor;
 
   useEffect(() => {
     loadData();
@@ -151,26 +155,38 @@ const DashboardScreen = ({ navigation }) => {
     month: 'long',
   });
 
-  const StatCard = ({ icon, label, value, color, gradient }) => (
-    <LinearGradient
-      colors={gradient}
-      style={[styles.statCard, { flex: isLargeScreen ? 1 : undefined }]}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
+  const StatCard = ({ icon, label, value }) => (
+    <View
+      style={[
+        styles.statCard,
+        {
+          flex: isLargeScreen ? 1 : undefined,
+          backgroundColor: panelColor,
+          borderColor,
+        },
+      ]}
     >
-      <View style={[styles.statIconContainer, { width: isSmallScreen ? 40 : 48, height: isSmallScreen ? 40 : 48 }]}>
-        <Ionicons name={icon} size={isSmallScreen ? 20 : 24} color={colors.white} />
+      <View style={[styles.statIconContainer, { width: isSmallScreen ? 42 : 48, height: isSmallScreen ? 42 : 48 }]}>
+        <Ionicons name={icon} size={isSmallScreen ? 20 : 22} color={colors.white} />
       </View>
       <View style={styles.statInfo}>
-        <Text style={[styles.statValue, { fontSize: isSmallScreen ? 24 : 28 }]}>{value}</Text>
-        <Text style={styles.statLabel}>{label}</Text>
+        <Text style={[styles.statValue, { fontSize: isSmallScreen ? 22 : 26, color: textColor }]}>{value}</Text>
+        <Text style={[styles.statLabel, { color: subtextColor }]}>{label}</Text>
       </View>
-    </LinearGradient>
+    </View>
   );
 
   const ChildCard = ({ child }) => (
     <TouchableOpacity
-      style={[styles.childCard, { backgroundColor: cardBg }]}
+      style={[
+        styles.childCard,
+        {
+          backgroundColor: panelColor,
+          borderColor,
+          borderWidth: 1,
+          shadowColor: 'transparent',
+        },
+      ]}
       onPress={() => navigation.navigate('ChildProfile', { id: child.id })}
       activeOpacity={0.7}
     >
@@ -186,8 +202,7 @@ const DashboardScreen = ({ navigation }) => {
         
         <View style={styles.childCardBody}>
           <Text style={[styles.childName, { color: textColor }]} numberOfLines={1}>{child.name}</Text>
-          <Text style={[styles.childMeta, { color: subtextColor }]}>{child.age} {t('dashboard.years')} • {child.group}</Text>
-          
+          <Text style={[styles.childMeta, { color: subtextColor }]}>{child.age} {t('dashboard.years')} - {child.group}</Text>
           <View style={styles.childStatus}>
             {child.isCheckedIn ? (
               <View style={[styles.statusTagActive, { backgroundColor: isDark ? colors.success[900] : colors.success[50] }]}>
@@ -225,19 +240,21 @@ const DashboardScreen = ({ navigation }) => {
           <Text style={[styles.welcomeDate, { color: subtextColor }]}>{today}</Text>
         </View>
         
-        <TouchableOpacity
-          style={styles.addButton}
-          onPress={() => navigation.navigate('AddChild')}
-          activeOpacity={0.8}
-        >
-          <Ionicons name="add" size={20} color={colors.white} />
-          <Text style={styles.addButtonText}>Nytt barn</Text>
-        </TouchableOpacity>
+        {user?.role === 'admin' && (
+          <TouchableOpacity
+            style={styles.addButton}
+            onPress={() => navigation.navigate('AddChild')}
+            activeOpacity={0.8}
+          >
+            <Ionicons name="add" size={20} color={colors.white} />
+            <Text style={styles.addButtonText}>Nytt barn</Text>
+          </TouchableOpacity>
+        )}
       </View>
 
       {/* Kindergarten info */}
       {settings && (
-        <View style={[styles.kindergartenCard, { backgroundColor: cardBg }]}>
+        <View style={[styles.kindergartenCard, { backgroundColor: panelColor, borderColor }]}>
           <View style={styles.kindergartenContent}>
             <View style={[styles.kindergartenLogo, { backgroundColor: isDark ? colors.primary[900] : colors.primary[50] }]}>
               {settings.kindergartenLogo ? (
@@ -272,22 +289,16 @@ const DashboardScreen = ({ navigation }) => {
             icon="people"
             label={t('dashboard.totalChildren')}
             value={children.length}
-            color="blue"
-            gradient={[colors.primary[400], colors.primary[600]]}
           />
           <StatCard
             icon="checkmark-circle"
             label={t('dashboard.checkedIn')}
             value={checkedInCount}
-            color="green"
-            gradient={[colors.success[400], colors.success[600]]}
           />
           <StatCard
             icon="home"
             label={t('dashboard.checkedOut')}
             value={checkedOutCount}
-            color="orange"
-            gradient={['#f59e0b', '#d97706']}
           />
         </View>
       )}
@@ -352,7 +363,7 @@ const DashboardScreen = ({ navigation }) => {
               </View>
               <Text style={[styles.emptyTitle, { color: textColor }]}>Ingen barn funnet</Text>
               <Text style={[styles.emptyText, { color: subtextColor }]}>
-                {searchQuery ? 'Prøv et annet søkeord' : 'Legg til barn for å komme i gang'}
+                {searchQuery ? 'Prov et annet sokeord' : 'Legg til barn for a komme i gang'}
               </Text>
             </View>
           )
@@ -423,15 +434,10 @@ const styles = StyleSheet.create({
     color: colors.white,
   },
   kindergartenCard: {
-    backgroundColor: colors.white,
     borderRadius: 16,
     padding: 16,
     marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
-    elevation: 2,
+    borderWidth: 1,
   },
   kindergartenContent: {
     flexDirection: 'row',
@@ -479,6 +485,7 @@ const styles = StyleSheet.create({
     padding: 18,
     borderRadius: 16,
     gap: 14,
+    borderWidth: 1,
   },
   statIconContainer: {
     borderRadius: 14,
@@ -542,16 +549,10 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
   },
   childCard: {
-    backgroundColor: colors.white,
     borderRadius: 18,
     padding: 18,
     flexDirection: 'row',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-    elevation: 2,
   },
   childCardInner: {
     flex: 1,
@@ -647,8 +648,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 48,
     marginHorizontal: 24,
-    backgroundColor: colors.white,
     borderRadius: 20,
+    borderWidth: 1,
   },
   emptyIcon: {
     width: 80,

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -102,10 +102,10 @@ const SettingsScreen = ({ navigation }) => {
   const LANGUAGES = [
     { code: 'nb', name: 'Norsk', countryCode: 'NO' },
     { code: 'en', name: 'English', countryCode: 'GB' },
-    { code: 'ar', name: 'العربية', countryCode: 'SA' },
+    { code: 'ar', name: 'Arabic', countryCode: 'SA' },
     { code: 'pl', name: 'Polski', countryCode: 'PL' },
     { code: 'so', name: 'Soomaali', countryCode: 'SO' },
-    { code: 'ur', name: 'اردو', countryCode: 'PK' },
+    { code: 'ur', name: 'Urdu', countryCode: 'PK' },
   ];
   
   // Modals
@@ -438,13 +438,12 @@ const SettingsScreen = ({ navigation }) => {
         {
           icon: 'business-outline',
           label: 'Barnehageinnstillinger',
-          description: 'Logo, åpningstider, kontaktinfo',
+          description: 'Logo, apningstider, kontaktinfo',
           action: () => {},
         },
       ],
     });
   }
-
   return (
     <ScrollView 
       style={[styles.container, { backgroundColor: themedColors.background }]} 
@@ -549,7 +548,7 @@ const SettingsScreen = ({ navigation }) => {
         {/* App Info */}
         <View style={styles.appInfo}>
           <Text style={[styles.appInfoText, { color: themedColors.neutral[400] }]}>Henteklar {t('settings.version')}</Text>
-          <Text style={[styles.appInfoText, { color: themedColors.neutral[400] }]}>© 2024 FrostByte AS</Text>
+          <Text style={[styles.appInfoText, { color: themedColors.neutral[400] }]}>(c) 2024 FrostByte AS</Text>
         </View>
       </View>
 
@@ -628,12 +627,12 @@ const SettingsScreen = ({ navigation }) => {
               </TouchableOpacity>
             </View>
 
-            <Text style={[styles.inputLabel, { color: themedColors.text }]}>Nåværende passord</Text>
+            <Text style={[styles.inputLabel, { color: themedColors.text }]}>Navaerende passord</Text>
             <TextInput
               style={[styles.input, { backgroundColor: themedColors.neutral[50], borderColor: themedColors.border, color: themedColors.text }]}
               value={oldPassword}
               onChangeText={setOldPassword}
-              placeholder="••••••••"
+              placeholder="********"
               placeholderTextColor={themedColors.neutral[400]}
               secureTextEntry
             />
@@ -643,7 +642,7 @@ const SettingsScreen = ({ navigation }) => {
               style={[styles.input, { backgroundColor: themedColors.neutral[50], borderColor: themedColors.border, color: themedColors.text }]}
               value={newPassword}
               onChangeText={handleNewPasswordChange}
-              placeholder="Minst 8 tegn med store/små bokstaver og tall"
+              placeholder="Minst 8 tegn med store/sma bokstaver og tall"
               placeholderTextColor={themedColors.neutral[400]}
               secureTextEntry
             />
@@ -698,7 +697,7 @@ const SettingsScreen = ({ navigation }) => {
                     color={passwordStrength.checks.lowercase ? '#10B981' : themedColors.neutral[400]} 
                   />
                   <Text style={[styles.requirementText, { color: themedColors.neutral[600] }]}>
-                    Små bokstaver (a-z)
+                    Sma bokstaver (a-z)
                   </Text>
                 </View>
                 <View style={styles.requirementItem}>
@@ -1187,3 +1186,8 @@ const styles = StyleSheet.create({
 });
 
 export default SettingsScreen;
+
+
+
+
+

@@ -91,7 +91,7 @@ const CheckInOutScreen = ({ navigation }) => {
 
     setActionLoading(`checkin-${child.id}`);
     try {
-      console.log('ðŸ”„ Sjekker inn barn:', child.name, child.id);
+      console.log('Sjekker inn barn:', child.name, child.id);
       await checkInChild(child.id, user?.name);
       console.log('Innsjekking vellykket');
       setRecentAction({
@@ -116,9 +116,9 @@ const CheckInOutScreen = ({ navigation }) => {
     });
 
     setActionLoading(`checkout-${child.id}`);
-    try {
-      console.log('ðŸ”„ Sjekker ut barn:', child.name, child.id);
+      console.log('Sjekker ut barn:', child.name, child.id);
       await checkOutChild(child.id, user?.name);
+      console.log('Utsjekking vellykket');
       console.log('Utsjekking vellykket');
       setRecentAction({
         childName: child.name,
@@ -528,6 +528,7 @@ const styles = StyleSheet.create({
 });
 
 export default CheckInOutScreen;
+
 
 
 
